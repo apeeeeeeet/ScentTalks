@@ -75,15 +75,24 @@
 
         <!-- Main Container -->
         <div class="accent-card p-8 rounded-3xl relative overflow-hidden mb-6">
-            <!-- Timer Display -->
-            <div id="phase-container" class="hidden mb-6">
-                <div class="flex justify-between items-center mb-3">
-                    <span id="phase-label" class="text-[10px] font-bold uppercase tracking-widest text-amber-600">Fase Persiapan</span>
-                    <span id="timer-number" class="font-mono text-lg font-bold text-gray-800">60s</span>
+            
+            <!-- Top Status Row (Anti-Overlap) -->
+            <div class="flex justify-between items-start mb-6 min-h-[32px]">
+                <!-- Category Badge -->
+                <div id="type-badge" class="invisible bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-gray-400 border border-gray-100 transition-all self-start">
+                    Hot Take
                 </div>
-                <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                    <div id="progress" class="progress-bar h-full bg-amber-500 w-full"></div>
+
+                <!-- Timer Info (Right Side) -->
+                <div id="phase-container" class="hidden text-right">
+                    <span id="timer-number" class="font-mono text-xl font-bold text-gray-800 block leading-none">60s</span>
+                    <span id="phase-label" class="text-[9px] font-bold uppercase tracking-widest text-amber-600 block mt-1">Fase Persiapan</span>
                 </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div id="progress-wrapper" class="hidden w-full bg-gray-100 h-1 rounded-full overflow-hidden mb-8">
+                <div id="progress" class="progress-bar h-full bg-amber-500 w-full"></div>
             </div>
 
             <!-- Content Area -->
@@ -92,11 +101,6 @@
                     Siapkan argumen Anda. <br> 
                     <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>
                 </p>
-            </div>
-            
-            <!-- Category Badge (Moved to top-left to avoid timer overlap) -->
-            <div id="type-badge" class="hidden absolute top-4 left-6 bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-gray-400 border border-gray-100">
-                Hot Take
             </div>
         </div>
 
@@ -121,7 +125,7 @@
         </div>
 
         <footer class="mt-16 opacity-50">
-            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">ScentTalks v2.6 • Roulette Edition</p>
+            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">ScentTalks v2.7 • Stable Layout</p>
         </footer>
     </div>
 
@@ -163,6 +167,7 @@
         const phaseLabel = document.getElementById('phase-label');
         const timerNumber = document.getElementById('timer-number');
         const progressBar = document.getElementById('progress');
+        const progressWrapper = document.getElementById('progress-wrapper');
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -176,6 +181,7 @@
             phase = 'idle';
             timeLeft = 60;
             phaseContainer.classList.add('hidden');
+            progressWrapper.classList.add('hidden');
             timerBtn.classList.remove('hidden');
             timerBtn.innerText = "MULAI TANTANGAN (2 MENIT)";
             progressBar.style.width = '100%';
@@ -183,7 +189,7 @@
 
         function updateBadge(type) {
             badge.innerText = type;
-            badge.classList.remove('hidden');
+            badge.classList.remove('invisible');
             if(type === "HOT TAKE") {
                 badge.style.color = "#dc2626";
                 badge.style.borderColor = "#fee2e2";
@@ -199,13 +205,14 @@
             phase = currentPhase;
             timeLeft = 60;
             phaseContainer.classList.remove('hidden');
+            progressWrapper.classList.remove('hidden');
             
             if (phase === 'thinking') {
-                phaseLabel.innerText = "Fase 1: Berpikir & Persiapan";
+                phaseLabel.innerText = "Fase 1: Persiapan";
                 phaseLabel.style.color = "#d97706";
                 progressBar.style.backgroundColor = "#fbbf24";
             } else {
-                phaseLabel.innerText = "Fase 2: Waktunya Berdiskusi!";
+                phaseLabel.innerText = "Fase 2: Diskusi";
                 phaseLabel.style.color = "#0284c7";
                 progressBar.style.backgroundColor = "#0ea5e9";
             }
@@ -234,10 +241,10 @@
             resetTimer();
             genBtn.disabled = true;
             topicBox.classList.add('spinning');
-            badge.classList.add('hidden');
+            badge.classList.add('invisible');
             
             let rounds = 0;
-            const maxRounds = 12; // Jumlah pergantian teks dalam roulette
+            const maxRounds = 12; 
             
             const roulette = setInterval(() => {
                 const tempIndex = Math.floor(Math.random() * database.length);
@@ -246,17 +253,14 @@
                 
                 if (rounds >= maxRounds) {
                     clearInterval(roulette);
-                    
-                    // Final Selection
                     const finalItem = database[Math.floor(Math.random() * database.length)];
                     topicText.innerHTML = `<span class="text-gray-900 italic">"${finalItem.content}"</span>`;
                     updateBadge(finalItem.type);
-                    
                     topicBox.classList.remove('spinning');
                     genBtn.disabled = false;
                     timerBtn.classList.remove('hidden');
                 }
-            }, 80); // Kecepatan putaran roulette (ms)
+            }, 80);
         });
 
         timerBtn.addEventListener('click', () => {
@@ -269,7 +273,7 @@
         resetBtn.addEventListener('click', () => {
             resetTimer();
             topicText.innerHTML = `Siapkan argumen Anda. <br> <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>`;
-            badge.classList.add('hidden');
+            badge.classList.add('invisible');
             timerBtn.classList.add('hidden');
         });
 
