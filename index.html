@@ -9,11 +9,11 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23D97706%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M6 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10z%22></path><path d=%22M9 5a3 3 0 0 1 6 0v3H9V5z%22></path></svg>">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-premium: #fcfbf7;
+            --bg-premium: #f7f3eb; 
             --brand-ink: #1a1a1a;
             --brand-amber: #D97706;
             --brand-gold: #c5a059;
@@ -23,6 +23,8 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-premium);
+            background-image: radial-gradient(#d1ccc0 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
             color: var(--brand-ink);
             overflow-x: hidden;
         }
@@ -31,22 +33,32 @@
             font-family: 'Playfair Display', serif;
         }
 
-        /* Roulette Animation */
+        /* Font baru untuk topik: Cormorant Garamond */
+        .topic-font {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+        }
+
         .spinning {
-            filter: blur(4px);
-            opacity: 0.5;
-            transform: scale(0.98);
+            filter: blur(6px);
+            opacity: 0.4;
+            transform: scale(0.97);
         }
 
         #topic-display {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Perfume Bottle Timer Styling */
         .bottle-container {
             position: relative;
-            width: 140px;
-            height: 200px;
+            width: 100px;
+            height: 140px;
             margin: 0 auto;
         }
 
@@ -59,7 +71,7 @@
         }
 
         .btn-main:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         .toast {
@@ -71,79 +83,74 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center py-12 px-6">
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
 
-    <!-- Header Section -->
-    <header class="text-center mb-12">
-        <h1 class="serif-font text-4xl font-bold tracking-tight mb-2 italic">ScentTalks.</h1>
-        <div class="h-[1px] w-12 bg-amber-600 mx-auto mb-6"></div>
-        <span id="type-label" class="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold mb-4 block">Topik Diskusi:</span>
-        <div id="topic-display" class="max-w-xl mx-auto px-4 min-h-[100px] flex items-center justify-center">
-            <h2 id="topic-text" class="serif-font text-2xl md:text-3xl font-bold leading-tight italic text-gray-800">
-                Siapkan argumen Anda.
-            </h2>
-        </div>
-    </header>
+    <div class="main-card w-full max-w-lg rounded-[3rem] p-8 md:p-10 flex flex-col items-center">
+        <!-- Header Section -->
+        <header class="text-center w-full mb-6">
+            <h1 class="serif-font text-3xl font-bold tracking-tight mb-1 italic">ScentTalks.</h1>
+            <div class="h-[1px] w-8 bg-amber-600 mx-auto mb-4 opacity-60"></div>
+            
+            <span id="type-label" class="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-3 block">Diskusi Fraghead</span>
+            
+            <div id="topic-display" class="w-full min-h-[80px] flex items-center justify-center mb-0">
+                <h2 id="topic-text" class="topic-font text-3xl md:text-4xl font-semibold leading-tight italic text-gray-800 px-2 text-center">
+                    Siapkan argumen Anda.
+                </h2>
+            </div>
+        </header>
 
-    <!-- Perfume Bottle Timer (Custom Indicator) -->
-    <div id="timer-container" class="bottle-container mb-12 invisible">
-        <svg viewBox="0 0 100 140" class="w-full h-full drop-shadow-sm">
-            <!-- Liquid Group with Clip Path -->
-            <defs>
-                <clipPath id="bottle-shape">
-                    <path d="M30 35 h40 v10 h15 a10 10 0 0 1 10 10 v70 a10 10 0 0 1-10 10 h-70 a10 10 0 0 1-10-10 v-70 a10 10 0 0 1 10-10 h15 z" />
-                </clipPath>
-            </defs>
-            
-            <!-- Bottle Outline Background -->
-            <path d="M30 35 h40 v10 h15 a10 10 0 0 1 10 10 v70 a10 10 0 0 1-10 10 h-70 a10 10 0 0 1-10-10 v-70 a10 10 0 0 1 10-10 h15 z" 
-                  fill="#F0EDE4" stroke="#E5E1D8" stroke-width="1.5" />
-            
-            <!-- The Liquid (Filling) -->
-            <rect id="liquid-fill" x="5" y="45" width="90" height="90" 
-                  clip-path="url(#bottle-shape)" fill="#D97706" class="liquid" />
-            
-            <!-- Bottle Cap -->
-            <rect x="35" y="10" width="30" height="25" rx="2" fill="#1a1a1a" />
-            
-            <!-- Timer Text in the middle of bottle -->
-            <text id="timer-val" x="50" y="95" text-anchor="middle" font-family="Playfair Display" font-size="20" font-weight="bold" fill="white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1)">1:00</text>
-        </svg>
-        <div class="text-center mt-2">
-            <span id="phase-status" class="text-[9px] uppercase tracking-[0.3em] font-black text-amber-700">Persiapan</span>
-        </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="flex flex-col items-center gap-6 w-full max-w-xs">
-        <div class="w-full space-y-4">
-            <button id="spin-btn" class="btn-main w-full bg-[#1a1a1a] text-white py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] shadow-xl">
-                Get New Topic
-            </button>
-            <button id="timer-toggle-btn" class="btn-main w-full border border-gray-200 bg-white text-gray-800 py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] hidden">
-                Start Challenge →
-            </button>
+        <!-- Perfume Bottle Timer - Sekarang menggunakan 'hidden' agar tidak memakan space saat tidak aktif -->
+        <div id="timer-container" class="bottle-container mb-6 hidden">
+            <svg viewBox="0 0 100 140" class="w-full h-full drop-shadow-sm">
+                <defs>
+                    <clipPath id="bottle-shape">
+                        <path d="M30 35 h40 v10 h15 a10 10 0 0 1 10 10 v70 a10 10 0 0 1-10 10 h-70 a10 10 0 0 1-10-10 v-70 a10 10 0 0 1 10-10 h15 z" />
+                    </clipPath>
+                </defs>
+                <path d="M30 35 h40 v10 h15 a10 10 0 0 1 10 10 v70 a10 10 0 0 1-10 10 h-70 a10 10 0 0 1-10-10 v-70 a10 10 0 0 1 10-10 h15 z" 
+                      fill="#F0EDE4" stroke="#E5E1D8" stroke-width="1.5" />
+                <rect id="liquid-fill" x="5" y="45" width="90" height="90" 
+                      clip-path="url(#bottle-shape)" fill="#D97706" class="liquid" />
+                <rect x="35" y="10" width="30" height="25" rx="4" fill="#1a1a1a" />
+                <text id="timer-val" x="50" y="95" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="18" font-weight="bold" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.2)">1:00</text>
+            </svg>
+            <div class="text-center mt-1">
+                <span id="phase-status" class="text-[8px] uppercase tracking-[0.2em] font-black text-amber-700">Persiapan</span>
+            </div>
         </div>
 
-        <!-- Hidden Controls during Timer -->
-        <div id="secondary-controls" class="flex items-center gap-8 invisible">
-            <button id="reset-btn" class="p-3 text-gray-400 hover:text-red-500 transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-            </button>
-            
-            <button id="play-pause-btn" class="w-14 h-14 flex items-center justify-center rounded-full bg-amber-600 text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
-                <svg id="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-                <svg id="pause-icon" class="hidden" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
-            </button>
+        <!-- Controls -->
+        <div class="flex flex-col items-center gap-4 w-full max-w-[280px]">
+            <div class="w-full space-y-2.5">
+                <button id="spin-btn" class="btn-main w-full bg-[#1a1a1a] text-white py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-gray-800">
+                    Get New Topic
+                </button>
+                <button id="timer-toggle-btn" class="btn-main w-full border border-amber-600/30 bg-amber-600/5 text-amber-900 py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] hidden hover:bg-amber-100/40">
+                    Start Challenge →
+                </button>
+            </div>
 
-            <button id="copy-btn" class="p-3 text-gray-400 hover:text-amber-600 transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-            </button>
+            <!-- Hidden Controls during Timer -->
+            <div id="secondary-controls" class="flex items-center justify-center gap-6 hidden w-full">
+                <button id="reset-btn" class="p-2 text-gray-300 hover:text-red-500 transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </button>
+                
+                <button id="play-pause-btn" class="w-12 h-12 flex items-center justify-center rounded-full bg-amber-600 text-white shadow-md hover:bg-amber-700">
+                    <svg id="play-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+                    <svg id="pause-icon" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+                </button>
+
+                <button id="copy-btn" class="p-2 text-gray-300 hover:text-amber-600 transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Notification -->
-    <div id="toast" class="toast fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest z-50 opacity-0 pointer-events-none shadow-2xl">
+    <div id="toast" class="toast fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-2.5 rounded-full text-[9px] uppercase font-bold tracking-widest z-50 opacity-0 pointer-events-none shadow-xl">
         Copied to clipboard
     </div>
 
@@ -163,7 +170,7 @@
             { type: "TOPIK DISKUSI", content: "Ada nggak notes parfum yang bikin lu auto mual kalo nyium?" },
             { type: "HOT TAKE", content: "Parfum 'Blue' harganya nggak masuk akal kalo di atas 3 juta." },
             { type: "TOPIK DISKUSI", content: "Siapa Perfumer idaman kalian yang karyanya selalu dipantau?" },
-            { type: "TOPIK DISKUSI", content: "Pengalaman dapet 'Bad Compliment' gara-gara parfum yang paling lucu?" }
+            { type: "TOPIK DISKUSI", content: "Pengalaman dapet 'Bad Compliment' gara-gara parfum yang paling lucu apa?" }
         ];
 
         let shuffledDeck = [];
@@ -173,7 +180,6 @@
         let currentPhase = 'thinking';
         let isRunning = false;
 
-        // Elements
         const topicText = document.getElementById('topic-text');
         const typeLabel = document.getElementById('type-label');
         const spinBtn = document.getElementById('spin-btn');
@@ -207,7 +213,6 @@
         }
 
         function updateBottle() {
-            // Liquid is in rect (y=45 to 135, height=90)
             const fillPercentage = timeLeft / totalTime;
             const newHeight = fillPercentage * 90;
             const newY = 45 + (90 - newHeight);
@@ -244,7 +249,7 @@
                         timeLeft = 60;
                         totalTime = 60;
                         phaseStatus.innerText = "Diskusi";
-                        liquidFill.setAttribute('fill', '#0284c7'); // Blue for talking
+                        liquidFill.setAttribute('fill', '#0284c7');
                         updateBottle();
                         showToast("Waktunya Berdiskusi!");
                         startTimer();
@@ -267,7 +272,7 @@
             timeLeft = 60;
             totalTime = 60;
             phaseStatus.innerText = "Persiapan";
-            liquidFill.setAttribute('fill', '#D97706'); // Back to Amber
+            liquidFill.setAttribute('fill', '#D97706');
             updateBottle();
         }
 
@@ -277,8 +282,8 @@
             spinBtn.disabled = true;
             topicDisplay.classList.add('spinning');
             resetTimer();
-            timerContainer.classList.add('invisible');
-            secondaryControls.classList.add('invisible');
+            timerContainer.classList.add('hidden');
+            secondaryControls.classList.add('hidden');
             timerToggleBtn.classList.add('hidden');
 
             let rounds = 0;
@@ -290,7 +295,7 @@
                     clearInterval(roulette);
                     const final = getNextTopic();
                     topicText.innerText = `"${final.content}"`;
-                    typeLabel.innerText = final.type + ":";
+                    typeLabel.innerText = final.type;
                     
                     topicDisplay.classList.remove('spinning');
                     spinBtn.disabled = false;
@@ -301,8 +306,9 @@
 
         timerToggleBtn.addEventListener('click', () => {
             timerToggleBtn.classList.add('hidden');
-            timerContainer.classList.remove('invisible');
-            secondaryControls.classList.remove('invisible');
+            timerContainer.classList.remove('hidden');
+            secondaryControls.classList.remove('hidden');
+            secondaryControls.classList.add('flex');
             startTimer();
         });
 
