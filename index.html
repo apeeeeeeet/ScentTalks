@@ -80,14 +80,14 @@
         <!-- Main Container -->
         <div class="accent-card p-8 rounded-3xl relative overflow-hidden mb-6">
             
-            <!-- Top Status Row (Anti-Overlap) -->
+            <!-- Baris Status Atas (Anti-Overlap) -->
             <div class="flex justify-between items-start mb-6 min-h-[32px]">
-                <!-- Category Badge -->
+                <!-- Badge Kategori -->
                 <div id="type-badge" class="invisible bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-gray-400 border border-gray-100 transition-all self-start">
                     Hot Take
                 </div>
 
-                <!-- Timer Info (Right Side) -->
+                <!-- Info Timer (Sisi Kanan) -->
                 <div id="phase-container" class="hidden text-right">
                     <span id="timer-number" class="font-mono text-xl font-bold text-gray-800 block leading-none">60s</span>
                     <span id="phase-label" class="text-[9px] font-bold uppercase tracking-widest text-amber-600 block mt-1">Fase Persiapan</span>
@@ -99,8 +99,8 @@
                 <div id="progress" class="progress-bar h-full bg-amber-500 w-full"></div>
             </div>
 
-            <!-- Content Area -->
-            <div id="topic-box" class="min-h-[160px] flex flex-col items-center justify-center">
+            <!-- Area Konten -->
+            <div id="topic-box" class="min-h-[160px] flex flex-col items-center justify-center text-center">
                 <p id="topic-text" class="text-lg md:text-xl font-semibold leading-relaxed text-gray-800 px-2">
                     Siapkan argumen Anda. <br> 
                     <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>
@@ -108,7 +108,7 @@
             </div>
         </div>
 
-        <!-- Action Section -->
+        <!-- Bagian Aksi -->
         <div class="space-y-3">
             <button id="gen-btn" class="btn-primary w-full py-5 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-sm">
                 Dapatkan Topik Baru
@@ -129,7 +129,7 @@
         </div>
 
         <footer class="mt-16 opacity-50">
-            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">ScentTalks v2.7 • Stable Layout</p>
+            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">ScentTalks v2.8 • Fair Random Edition</p>
         </footer>
     </div>
 
@@ -140,7 +140,6 @@
 
     <script>
         const database = [
-            // Original Database
             { type: "HOT TAKE", content: "Parfum lokal harganya makin nggak ngotak, mending beli desainer sekalian." },
             { type: "TOPIK DISKUSI", content: "Kenapa orang Indonesia obsesi banget sama parfum 'Beast Mode'?" },
             { type: "HOT TAKE", content: "Notes Vanilla itu ngebosenin dan nggak ada seninya sama sekali." },
@@ -155,8 +154,6 @@
             { type: "HOT TAKE", content: "Pake parfum mahal tapi nggak mandi itu percuma, tetep bau apek." },
             { type: "HOT TAKE", content: "Longevity (tahan lama) itu faktor paling nggak penting dalam kualitas parfum." },
             { type: "TOPIK DISKUSI", content: "Ada nggak notes parfum yang bikin lu auto mual kalo nyium?" },
-            
-            // Additional Database
             { type: "HOT TAKE", content: "Parfum 'Blue' atau 'Fresh' harganya nggak masuk akal kalo di atas 3 juta." },
             { type: "TOPIK DISKUSI", content: "Ceritain Blind Buy paling sukses yang pernah kalian alamin." },
             { type: "HOT TAKE", content: "Sillage yang menuhin ruangan itu sebenernya considered polusi udara." },
@@ -174,6 +171,27 @@
             { type: "TOPIK DISKUSI", content: "Notes 'Sweet/Gourmand' itu kategori yang paling gampang bikin bosen." },
             { type: "TOPIK DISKUSI", content: "Pengalaman dapet 'Bad Compliment' gara-gara parfum yang paling lucu apa?" }
         ];
+
+        // Sistem Dek Terkocok (Shuffle Deck)
+        let shuffledDeck = [];
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function getNextTopic() {
+            if (shuffledDeck.length === 0) {
+                // Jika dek habis, isi ulang dari database dan kocok lagi
+                shuffledDeck = shuffle([...database]);
+            }
+            return shuffledDeck.pop();
+        }
 
         let timerInterval;
         let timeLeft = 60;
@@ -269,15 +287,19 @@
             const maxRounds = 12; 
             
             const roulette = setInterval(() => {
+                // Efek visual tetap menggunakan database penuh agar variatif saat berputar
                 const tempIndex = Math.floor(Math.random() * database.length);
                 topicText.innerHTML = `<span class="text-gray-400 font-normal">"${database[tempIndex].content}"</span>`;
                 rounds++;
                 
                 if (rounds >= maxRounds) {
                     clearInterval(roulette);
-                    const finalItem = database[Math.floor(Math.random() * database.length)];
+                    
+                    // Ambil hasil akhir dari dek yang sudah dikocok secara adil
+                    const finalItem = getNextTopic();
                     topicText.innerHTML = `<span class="text-gray-900 italic">"${finalItem.content}"</span>`;
                     updateBadge(finalItem.type);
+                    
                     topicBox.classList.remove('spinning');
                     genBtn.disabled = false;
                     timerBtn.classList.remove('hidden');
