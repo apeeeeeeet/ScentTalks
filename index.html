@@ -5,137 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScentTalks | Fragrance Discussion Challenge</title>
     
-    <!-- Favicon: Logo Botol Parfum Minimalis -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23d97706%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M6 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10z%22></path><path d=%22M9 5a3 3 0 0 1 6 0v3H9V5z%22></path></svg>">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23D97706%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M6 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10z%22></path><path d=%22M9 5a3 3 0 0 1 6 0v3H9V5z%22></path></svg>">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --bg-premium: #fcfbf7;
+            --brand-ink: #1a1a1a;
+            --brand-amber: #D97706;
+            --brand-gold: #c5a059;
+            --border-soft: #e5e1d8;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #fdfdfb;
-            color: #1a1a1a;
+            background-color: var(--bg-premium);
+            color: var(--brand-ink);
+            overflow-x: hidden;
         }
+
         .serif-font {
             font-family: 'Playfair Display', serif;
         }
-        .accent-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
-        }
-        .progress-bar {
-            transition: width 1s linear;
-        }
-        #topic-box {
-            transition: all 0.2s ease-out;
-        }
+
+        /* Roulette Animation */
         .spinning {
-            filter: blur(2px);
-            opacity: 0.7;
+            filter: blur(4px);
+            opacity: 0.5;
             transform: scale(0.98);
         }
-        .btn-primary {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            transition: all 0.2s ease;
+
+        #topic-display {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .btn-primary:hover:not(:disabled) {
-            background-color: #333333;
-            transform: translateY(-1px);
+
+        /* Perfume Bottle Timer Styling */
+        .bottle-container {
+            position: relative;
+            width: 140px;
+            height: 200px;
+            margin: 0 auto;
         }
-        .btn-primary:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
+
+        .liquid {
+            transition: height 1s linear, y 1s linear, fill 0.3s ease;
         }
-        .btn-outline {
-            border: 1px solid #e5e7eb;
-            background: #ffffff;
-            color: #4b5563;
-            transition: all 0.2s ease;
+
+        .btn-main {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-outline:hover {
-            background: #f9fafb;
-            border-color: #d1d5db;
+
+        .btn-main:active {
+            transform: scale(0.95);
         }
+
         .toast {
             transform: translateX(-50%) translateY(100px);
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .toast.show {
             transform: translateX(-50%) translateY(0);
-            opacity: 1;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center justify-center py-12 px-6">
 
-    <div class="max-w-md w-full text-center">
-        <!-- Header -->
-        <header class="mb-10">
-            <h1 class="serif-font text-4xl font-bold tracking-tight mb-2 text-black italic">ScentTalks.</h1>
-            <p class="text-[11px] uppercase tracking-[0.3em] text-gray-400 font-bold">Fragrance Community Hub</p>
-        </header>
-
-        <!-- Main Container -->
-        <div class="accent-card p-8 rounded-3xl relative overflow-hidden mb-6">
-            
-            <!-- Baris Status Atas (Anti-Overlap) -->
-            <div class="flex justify-between items-start mb-6 min-h-[32px]">
-                <!-- Badge Kategori -->
-                <div id="type-badge" class="invisible bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-gray-400 border border-gray-100 transition-all self-start">
-                    Hot Take
-                </div>
-
-                <!-- Info Timer (Sisi Kanan) -->
-                <div id="phase-container" class="hidden text-right">
-                    <span id="timer-number" class="font-mono text-xl font-bold text-gray-800 block leading-none">60s</span>
-                    <span id="phase-label" class="text-[9px] font-bold uppercase tracking-widest text-amber-600 block mt-1">Fase Persiapan</span>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div id="progress-wrapper" class="hidden w-full bg-gray-100 h-1 rounded-full overflow-hidden mb-8">
-                <div id="progress" class="progress-bar h-full bg-amber-500 w-full"></div>
-            </div>
-
-            <!-- Area Konten -->
-            <div id="topic-box" class="min-h-[160px] flex flex-col items-center justify-center text-center">
-                <p id="topic-text" class="text-lg md:text-xl font-semibold leading-relaxed text-gray-800 px-2">
-                    Siapkan argumen Anda. <br> 
-                    <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>
-                </p>
-            </div>
+    <!-- Header Section -->
+    <header class="text-center mb-12">
+        <h1 class="serif-font text-4xl font-bold tracking-tight mb-2 italic">ScentTalks.</h1>
+        <div class="h-[1px] w-12 bg-amber-600 mx-auto mb-6"></div>
+        <span id="type-label" class="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold mb-4 block">Topik Diskusi:</span>
+        <div id="topic-display" class="max-w-xl mx-auto px-4 min-h-[100px] flex items-center justify-center">
+            <h2 id="topic-text" class="serif-font text-2xl md:text-3xl font-bold leading-tight italic text-gray-800">
+                Siapkan argumen Anda.
+            </h2>
         </div>
+    </header>
 
-        <!-- Bagian Aksi -->
-        <div class="space-y-3">
-            <button id="gen-btn" class="btn-primary w-full py-5 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-sm">
-                Dapatkan Topik Baru
-            </button>
+    <!-- Perfume Bottle Timer (Custom Indicator) -->
+    <div id="timer-container" class="bottle-container mb-12 invisible">
+        <svg viewBox="0 0 100 140" class="w-full h-full drop-shadow-sm">
+            <!-- Liquid Group with Clip Path -->
+            <defs>
+                <clipPath id="bottle-shape">
+                    <path d="M30 35 h40 v10 h15 a10 10 0 0 1 10 10 v70 a10 10 0 0 1-10 10 h-70 a10 10 0 0 1-10-10 v-70 a10 10 0 0 1 10-10 h15 z" />
+                </clipPath>
+            </defs>
             
-            <button id="timer-btn" class="hidden w-full py-4 rounded-2xl bg-amber-50 border border-amber-100 text-amber-700 font-bold text-xs uppercase tracking-widest hover:bg-amber-100 transition-all">
-                Mulai Tantangan (2 Menit)
-            </button>
-
-            <div class="flex gap-2">
-                <button id="copy-btn" class="btn-outline flex-1 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider">
-                    Salin Topik
-                </button>
-                <button id="reset-btn" class="btn-outline flex-1 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider text-red-500 border-red-500/20 hover:bg-red-50">
-                    Reset App
-                </button>
-            </div>
+            <!-- Bottle Outline Background -->
+            <path d="M30 35 h40 v10 h15 a10 10 0 0 1 10 10 v70 a10 10 0 0 1-10 10 h-70 a10 10 0 0 1-10-10 v-70 a10 10 0 0 1 10-10 h15 z" 
+                  fill="#F0EDE4" stroke="#E5E1D8" stroke-width="1.5" />
+            
+            <!-- The Liquid (Filling) -->
+            <rect id="liquid-fill" x="5" y="45" width="90" height="90" 
+                  clip-path="url(#bottle-shape)" fill="#D97706" class="liquid" />
+            
+            <!-- Bottle Cap -->
+            <rect x="35" y="10" width="30" height="25" rx="2" fill="#1a1a1a" />
+            
+            <!-- Timer Text in the middle of bottle -->
+            <text id="timer-val" x="50" y="95" text-anchor="middle" font-family="Playfair Display" font-size="20" font-weight="bold" fill="white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1)">1:00</text>
+        </svg>
+        <div class="text-center mt-2">
+            <span id="phase-status" class="text-[9px] uppercase tracking-[0.3em] font-black text-amber-700">Persiapan</span>
         </div>
-
-        <footer class="mt-16 opacity-50">
-            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">ScentTalks v2.8 • Fair Random Edition</p>
-        </footer>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="toast fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-xs font-bold shadow-xl opacity-0 pointer-events-none z-50">
-        Berhasil disalin ke clipboard!
+    <!-- Controls -->
+    <div class="flex flex-col items-center gap-6 w-full max-w-xs">
+        <div class="w-full space-y-4">
+            <button id="spin-btn" class="btn-main w-full bg-[#1a1a1a] text-white py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] shadow-xl">
+                Get New Topic
+            </button>
+            <button id="timer-toggle-btn" class="btn-main w-full border border-gray-200 bg-white text-gray-800 py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] hidden">
+                Start Challenge →
+            </button>
+        </div>
+
+        <!-- Hidden Controls during Timer -->
+        <div id="secondary-controls" class="flex items-center gap-8 invisible">
+            <button id="reset-btn" class="p-3 text-gray-400 hover:text-red-500 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+            
+            <button id="play-pause-btn" class="w-14 h-14 flex items-center justify-center rounded-full bg-amber-600 text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
+                <svg id="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+                <svg id="pause-icon" class="hidden" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+            </button>
+
+            <button id="copy-btn" class="p-3 text-gray-400 hover:text-amber-600 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="toast" class="toast fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest z-50 opacity-0 pointer-events-none shadow-2xl">
+        Copied to clipboard
     </div>
 
     <script>
@@ -150,30 +159,35 @@
             { type: "HOT TAKE", content: "Influencer yang bilang 'semua parfum blind buy worthy' itu trik marketing." },
             { type: "TOPIK DISKUSI", content: "Kalo parfum favorit lu discontinue, lu bakal cari stock lama atau move on?" },
             { type: "HOT TAKE", content: "Wanginya Sauvage itu udah jadi bau 'Mas-Mas Kantor' standar." },
-            { type: "TOPIK DISKUSI", content: "Apa parfum paling 'overrated' yang pernah lu beli karena hype?" },
-            { type: "HOT TAKE", content: "Pake parfum mahal tapi nggak mandi itu percuma, tetep bau apek." },
             { type: "HOT TAKE", content: "Longevity (tahan lama) itu faktor paling nggak penting dalam kualitas parfum." },
             { type: "TOPIK DISKUSI", content: "Ada nggak notes parfum yang bikin lu auto mual kalo nyium?" },
-            { type: "HOT TAKE", content: "Parfum 'Blue' atau 'Fresh' harganya nggak masuk akal kalo di atas 3 juta." },
-            { type: "TOPIK DISKUSI", content: "Ceritain Blind Buy paling sukses yang pernah kalian alamin." },
-            { type: "HOT TAKE", content: "Sillage yang menuhin ruangan itu sebenernya considered polusi udara." },
-            { type: "TOPIK DISKUSI", content: "Notes apa yang paling sulit kalian nikmatin? (Misal: Rose, Oud, Leather)" },
-            { type: "HOT TAKE", content: "Brand desainer sekarang cuma ngejar mass-appeal dan mulai kehilangan jati diri." },
-            { type: "TOPIK DISKUSI", content: "Apa parfum paling 'Safe' buat dipake ke acara kondangan outdoor?" },
-            { type: "TOPIK DISKUSI", content: "Dapet pujian (compliment) parfum apa yang menurut kalian paling berkesan?" },
-            { type: "TOPIK DISKUSI", content: "Kalo disuruh milih 1 notes parfum selamanya, kalian bakal milih apa?" },
-            { type: "HOT TAKE", content: "Parfum 'Unisex' itu trik marketing; hidung kita tetep bakal ngelabelin itu maskulin atau feminin." },
-            { type: "TOPIK DISKUSI", content: "Parfum apa yang menurut kalian aromanya paling berasa 'Mahal'?" },
-            { type: "HOT TAKE", content: "Niche perfumery sekarang makin nggak ada bedanya sama desainer, cuma beda harga." },
-            { type: "TOPIK DISKUSI", content: "Botol parfum mana yang menurut kalian desainnya paling jelek atau norak?" },
-            { type: "TOPIK DISKUSI", content: "Siapa Perfumer (idaman) kalian yang karyanya selalu kalian pantau?" },
-            { type: "HOT TAKE", content: "Parfum 'Indie' seringkali cuma eksperimen amatir yang dijual dengan harga Niche." },
-            { type: "TOPIK DISKUSI", content: "Notes 'Sweet/Gourmand' itu kategori yang paling gampang bikin bosen." },
-            { type: "TOPIK DISKUSI", content: "Pengalaman dapet 'Bad Compliment' gara-gara parfum yang paling lucu apa?" }
+            { type: "HOT TAKE", content: "Parfum 'Blue' harganya nggak masuk akal kalo di atas 3 juta." },
+            { type: "TOPIK DISKUSI", content: "Siapa Perfumer idaman kalian yang karyanya selalu dipantau?" },
+            { type: "TOPIK DISKUSI", content: "Pengalaman dapet 'Bad Compliment' gara-gara parfum yang paling lucu?" }
         ];
 
-        // Sistem Dek Terkocok (Shuffle Deck)
         let shuffledDeck = [];
+        let timerInterval;
+        let timeLeft = 60;
+        let totalTime = 60;
+        let currentPhase = 'thinking';
+        let isRunning = false;
+
+        // Elements
+        const topicText = document.getElementById('topic-text');
+        const typeLabel = document.getElementById('type-label');
+        const spinBtn = document.getElementById('spin-btn');
+        const timerToggleBtn = document.getElementById('timer-toggle-btn');
+        const timerContainer = document.getElementById('timer-container');
+        const secondaryControls = document.getElementById('secondary-controls');
+        const timerVal = document.getElementById('timer-val');
+        const liquidFill = document.getElementById('liquid-fill');
+        const phaseStatus = document.getElementById('phase-status');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const resetBtn = document.getElementById('reset-btn');
+        const topicDisplay = document.getElementById('topic-display');
 
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
@@ -187,139 +201,120 @@
 
         function getNextTopic() {
             if (shuffledDeck.length === 0) {
-                // Jika dek habis, isi ulang dari database dan kocok lagi
                 shuffledDeck = shuffle([...database]);
             }
             return shuffledDeck.pop();
         }
 
-        let timerInterval;
-        let timeLeft = 60;
-        let phase = 'idle'; 
-
-        const topicBox = document.getElementById('topic-box');
-        const topicText = document.getElementById('topic-text');
-        const badge = document.getElementById('type-badge');
-        const genBtn = document.getElementById('gen-btn');
-        const timerBtn = document.getElementById('timer-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const phaseContainer = document.getElementById('phase-container');
-        const phaseLabel = document.getElementById('phase-label');
-        const timerNumber = document.getElementById('timer-number');
-        const progressBar = document.getElementById('progress');
-        const progressWrapper = document.getElementById('progress-wrapper');
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        function resetTimer() {
-            clearInterval(timerInterval);
-            phase = 'idle';
-            timeLeft = 60;
-            phaseContainer.classList.add('hidden');
-            progressWrapper.classList.add('hidden');
-            timerBtn.classList.remove('hidden');
-            timerBtn.innerText = "MULAI TANTANGAN (2 MENIT)";
-            progressBar.style.width = '100%';
-        }
-
-        function updateBadge(type) {
-            badge.innerText = type;
-            badge.classList.remove('invisible');
-            if(type === "HOT TAKE") {
-                badge.style.color = "#dc2626";
-                badge.style.borderColor = "#fee2e2";
-                badge.style.backgroundColor = "#fef2f2";
-            } else {
-                badge.style.color = "#0284c7";
-                badge.style.borderColor = "#e0f2fe";
-                badge.style.backgroundColor = "#f0f9ff";
-            }
-        }
-
-        function startPhase(currentPhase) {
-            phase = currentPhase;
-            timeLeft = 60;
-            phaseContainer.classList.remove('hidden');
-            progressWrapper.classList.remove('hidden');
+        function updateBottle() {
+            // Liquid is in rect (y=45 to 135, height=90)
+            const fillPercentage = timeLeft / totalTime;
+            const newHeight = fillPercentage * 90;
+            const newY = 45 + (90 - newHeight);
             
-            if (phase === 'thinking') {
-                phaseLabel.innerText = "Fase 1: Persiapan";
-                phaseLabel.style.color = "#d97706";
-                progressBar.style.backgroundColor = "#fbbf24";
-            } else {
-                phaseLabel.innerText = "Fase 2: Diskusi";
-                phaseLabel.style.color = "#0284c7";
-                progressBar.style.backgroundColor = "#0ea5e9";
-            }
+            liquidFill.setAttribute('height', newHeight);
+            liquidFill.setAttribute('y', newY);
+            
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            timerVal.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
 
             timerInterval = setInterval(() => {
-                timeLeft--;
-                timerNumber.innerText = timeLeft + 's';
-                progressBar.style.width = (timeLeft / 60 * 100) + '%';
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    if (phase === 'thinking') {
-                        startPhase('talking');
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateBottle();
+                } else {
+                    stopTimer();
+                    if (currentPhase === 'thinking') {
+                        currentPhase = 'talking';
+                        timeLeft = 60;
+                        totalTime = 60;
+                        phaseStatus.innerText = "Diskusi";
+                        liquidFill.setAttribute('fill', '#0284c7'); // Blue for talking
+                        updateBottle();
+                        showToast("Waktunya Berdiskusi!");
+                        startTimer();
                     } else {
-                        phaseLabel.innerText = "SELESAI!";
-                        timerBtn.innerText = "COBA LAGI?";
-                        showToast("Waktu habis! Sesi diskusi berakhir.");
+                        phaseStatus.innerText = "Selesai";
+                        showToast("Waktu habis!");
                     }
                 }
             }, 1000);
         }
 
-        genBtn.addEventListener('click', () => {
-            if (genBtn.disabled) return;
+        function toggleTimer() {
+            if (isRunning) stopTimer();
+            else startTimer();
+        }
+
+        function resetTimer() {
+            stopTimer();
+            currentPhase = 'thinking';
+            timeLeft = 60;
+            totalTime = 60;
+            phaseStatus.innerText = "Persiapan";
+            liquidFill.setAttribute('fill', '#D97706'); // Back to Amber
+            updateBottle();
+        }
+
+        spinBtn.addEventListener('click', () => {
+            if (spinBtn.disabled) return;
             
+            spinBtn.disabled = true;
+            topicDisplay.classList.add('spinning');
             resetTimer();
-            genBtn.disabled = true;
-            topicBox.classList.add('spinning');
-            badge.classList.add('invisible');
-            
+            timerContainer.classList.add('invisible');
+            secondaryControls.classList.add('invisible');
+            timerToggleBtn.classList.add('hidden');
+
             let rounds = 0;
-            const maxRounds = 12; 
-            
             const roulette = setInterval(() => {
-                // Efek visual tetap menggunakan database penuh agar variatif saat berputar
-                const tempIndex = Math.floor(Math.random() * database.length);
-                topicText.innerHTML = `<span class="text-gray-400 font-normal">"${database[tempIndex].content}"</span>`;
+                const temp = database[Math.floor(Math.random() * database.length)];
+                topicText.innerText = `"${temp.content}"`;
                 rounds++;
-                
-                if (rounds >= maxRounds) {
+                if (rounds > 12) {
                     clearInterval(roulette);
+                    const final = getNextTopic();
+                    topicText.innerText = `"${final.content}"`;
+                    typeLabel.innerText = final.type + ":";
                     
-                    // Ambil hasil akhir dari dek yang sudah dikocok secara adil
-                    const finalItem = getNextTopic();
-                    topicText.innerHTML = `<span class="text-gray-900 italic">"${finalItem.content}"</span>`;
-                    updateBadge(finalItem.type);
-                    
-                    topicBox.classList.remove('spinning');
-                    genBtn.disabled = false;
-                    timerBtn.classList.remove('hidden');
+                    topicDisplay.classList.remove('spinning');
+                    spinBtn.disabled = false;
+                    timerToggleBtn.classList.remove('hidden');
                 }
             }, 80);
         });
 
-        timerBtn.addEventListener('click', () => {
-            if (phase === 'idle') {
-                startPhase('thinking');
-                timerBtn.innerText = "TANTANGAN BERJALAN...";
-            }
+        timerToggleBtn.addEventListener('click', () => {
+            timerToggleBtn.classList.add('hidden');
+            timerContainer.classList.remove('invisible');
+            secondaryControls.classList.remove('invisible');
+            startTimer();
         });
 
-        resetBtn.addEventListener('click', () => {
-            resetTimer();
-            topicText.innerHTML = `Siapkan argumen Anda. <br> <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>`;
-            badge.classList.add('invisible');
-            timerBtn.classList.add('hidden');
-        });
+        playPauseBtn.addEventListener('click', toggleTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show', 'opacity-100');
+            setTimeout(() => toast.classList.remove('show', 'opacity-100'), 2000);
+        }
 
         document.getElementById('copy-btn').addEventListener('click', () => {
             const text = topicText.innerText;
@@ -330,8 +325,10 @@
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            showToast("Berhasil disalin!");
+            showToast("Copied to clipboard");
         });
+
+        updateBottle();
     </script>
 </body>
 </html>
