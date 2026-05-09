@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScentTalks | Fragrance Discussion Challenge</title>
     
-    <!-- Favicon -->
+    <!-- Favicon: Logo Botol Parfum Minimalis -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23D97706%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M6 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10z%22></path><path d=%22M9 5a3 3 0 0 1 6 0v3H9V5z%22></path></svg>">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,18 +33,20 @@
             font-family: 'Playfair Display', serif;
         }
 
-        /* Font baru untuk topik: Cormorant Garamond */
         .topic-font {
             font-family: 'Cormorant Garamond', serif;
         }
 
+        /* Card: Transparan dengan Blur */
         .main-card {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid var(--border-soft);
             box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+            width: 100%;
         }
 
+        /* Animasi Roulette */
         .spinning {
             filter: blur(6px);
             opacity: 0.4;
@@ -55,6 +57,7 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* Bottle Indicator */
         .bottle-container {
             position: relative;
             width: 100px;
@@ -74,6 +77,19 @@
             transform: scale(0.96);
         }
 
+        .btn-outline {
+            border: 1px solid var(--border-soft);
+            background: rgba(255, 255, 255, 0.5);
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            background: #ffffff;
+            border-color: #d1d5db;
+        }
+
+        /* Notifikasi Toast */
         .toast {
             transform: translateX(-50%) translateY(100px);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -83,25 +99,28 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
 
-    <div class="main-card w-full max-w-lg rounded-[3rem] p-8 md:p-10 flex flex-col items-center">
-        <!-- Header Section -->
-        <header class="text-center w-full mb-6">
-            <h1 class="serif-font text-3xl font-bold tracking-tight mb-1 italic">ScentTalks.</h1>
-            <div class="h-[1px] w-8 bg-amber-600 mx-auto mb-4 opacity-60"></div>
+    <!-- Container Utama: Responsif di Mobile, Tablet, Laptop -->
+    <div class="main-card max-w-[95%] sm:max-w-lg md:max-w-xl lg:max-w-2xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-12 flex flex-col items-center transition-all">
+        
+        <!-- Header: Ukuran teks menyesuaikan layar -->
+        <header class="text-center w-full mb-4 sm:mb-6">
+            <h1 class="serif-font text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-1 italic">ScentTalks.</h1>
+            <div class="h-[1px] w-6 sm:w-8 bg-amber-600 mx-auto mb-3 sm:mb-4 opacity-60"></div>
             
-            <span id="type-label" class="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-3 block">Diskusi Fraghead</span>
+            <span id="type-label" class="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-2 sm:mb-3 block">Diskusi Fraghead</span>
             
-            <div id="topic-display" class="w-full min-h-[80px] flex items-center justify-center mb-0">
-                <h2 id="topic-text" class="topic-font text-3xl md:text-4xl font-semibold leading-tight italic text-gray-800 px-2 text-center">
+            <!-- Area Topik: Font besar di laptop, pas di iPhone -->
+            <div id="topic-display" class="w-full min-h-[80px] sm:min-h-[100px] flex items-center justify-center mb-0">
+                <h2 id="topic-text" class="topic-font text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight italic text-gray-800 px-1 sm:px-2 text-center transition-all">
                     Siapkan argumen Anda.
                 </h2>
             </div>
         </header>
 
-        <!-- Perfume Bottle Timer - Sekarang menggunakan 'hidden' agar tidak memakan space saat tidak aktif -->
-        <div id="timer-container" class="bottle-container mb-6 hidden">
+        <!-- Perfume Bottle Timer -->
+        <div id="timer-container" class="bottle-container mb-4 sm:mb-6 hidden scale-90 sm:scale-100">
             <svg viewBox="0 0 100 140" class="w-full h-full drop-shadow-sm">
                 <defs>
                     <clipPath id="bottle-shape">
@@ -120,37 +139,39 @@
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="flex flex-col items-center gap-4 w-full max-w-[280px]">
-            <div class="w-full space-y-2.5">
-                <button id="spin-btn" class="btn-main w-full bg-[#1a1a1a] text-white py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-gray-800">
+        <!-- Tombol Aksi: Lebar menyesuaikan di mobile dan desktop -->
+        <div class="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[280px] sm:max-w-[320px]">
+            <div class="w-full space-y-2 sm:space-y-2.5">
+                <button id="spin-btn" class="btn-main w-full bg-[#1a1a1a] text-white py-3.5 sm:py-4 rounded-full font-bold text-[9px] sm:text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-gray-800">
                     Get New Topic
                 </button>
-                <button id="timer-toggle-btn" class="btn-main w-full border border-amber-600/30 bg-amber-600/5 text-amber-900 py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] hidden hover:bg-amber-100/40">
+                <button id="timer-toggle-btn" class="btn-main w-full border border-amber-600/30 bg-amber-600/5 text-amber-900 py-3.5 sm:py-4 rounded-full font-bold text-[9px] sm:text-[10px] uppercase tracking-[0.2em] hidden hover:bg-amber-100/40">
                     Start Challenge →
                 </button>
             </div>
 
-            <!-- Hidden Controls during Timer -->
-            <div id="secondary-controls" class="flex items-center justify-center gap-6 hidden w-full">
-                <button id="reset-btn" class="p-2 text-gray-300 hover:text-red-500 transition-colors">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <!-- Kontrol Play/Pause -->
+            <div id="secondary-controls" class="hidden items-center justify-center w-full mb-1 sm:mb-2">
+                <button id="play-pause-btn" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-amber-600 text-white shadow-md hover:bg-amber-700">
+                    <svg id="play-icon" width="20" height="20" sm:width="22" sm:height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+                    <svg id="pause-icon" class="hidden" width="20" height="20" sm:width="22" sm:height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
                 </button>
-                
-                <button id="play-pause-btn" class="w-12 h-12 flex items-center justify-center rounded-full bg-amber-600 text-white shadow-md hover:bg-amber-700">
-                    <svg id="play-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-                    <svg id="pause-icon" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
-                </button>
+            </div>
 
-                <button id="copy-btn" class="p-2 text-gray-300 hover:text-amber-600 transition-colors">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <!-- Tombol Reset & Copy -->
+            <div class="flex gap-2 w-full">
+                <button id="copy-btn" class="btn-outline flex-1 py-2.5 sm:py-3 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
+                    Copy Topic
+                </button>
+                <button id="reset-btn" class="btn-outline flex-1 py-2.5 sm:py-3 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-red-500 border-red-500/20 hover:bg-red-50">
+                    Reset App
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="toast" class="toast fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-2.5 rounded-full text-[9px] uppercase font-bold tracking-widest z-50 opacity-0 pointer-events-none shadow-xl">
+    <!-- Notifikasi -->
+    <div id="toast" class="toast fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 bg-black text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-[8px] sm:text-[9px] uppercase font-bold tracking-widest z-50 opacity-0 pointer-events-none shadow-xl">
         Copied to clipboard
     </div>
 
@@ -313,7 +334,16 @@
         });
 
         playPauseBtn.addEventListener('click', toggleTimer);
-        resetBtn.addEventListener('click', resetTimer);
+        
+        resetBtn.addEventListener('click', () => {
+            resetTimer();
+            topicText.innerHTML = `Siapkan argumen Anda.`;
+            typeLabel.innerText = "Diskusi Fraghead";
+            timerContainer.classList.add('hidden');
+            secondaryControls.classList.add('hidden');
+            timerToggleBtn.classList.add('hidden');
+            shuffledDeck = []; 
+        });
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
