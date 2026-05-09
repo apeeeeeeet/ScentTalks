@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScentTalks | Fragrance Discussion Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fdfdfb;
+            color: #1a1a1a;
+        }
+        .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .accent-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
+        }
+        .progress-bar {
+            transition: width 1s linear;
+        }
+        #topic-box {
+            transition: all 0.2s ease-out;
+        }
+        .spinning {
+            filter: blur(2px);
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #333333;
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .btn-outline {
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        .toast {
+            transform: translateX(-50%) translateY(100px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-md w-full text-center">
+        <!-- Header -->
+        <header class="mb-10">
+            <h1 class="serif-font text-4xl font-bold tracking-tight mb-2 text-black italic">ScentTalks.</h1>
+            <p class="text-[11px] uppercase tracking-[0.3em] text-gray-400 font-bold">Fragrance Community Hub</p>
+        </header>
+
+        <!-- Main Container -->
+        <div class="accent-card p-8 rounded-3xl relative overflow-hidden mb-6">
+            <!-- Timer Display -->
+            <div id="phase-container" class="hidden mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <span id="phase-label" class="text-[10px] font-bold uppercase tracking-widest text-amber-600">Fase Persiapan</span>
+                    <span id="timer-number" class="font-mono text-lg font-bold text-gray-800">60s</span>
+                </div>
+                <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                    <div id="progress" class="progress-bar h-full bg-amber-500 w-full"></div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div id="topic-box" class="min-h-[160px] flex flex-col items-center justify-center">
+                <p id="topic-text" class="text-lg md:text-xl font-semibold leading-relaxed text-gray-800 px-2">
+                    Siapkan argumen Anda. <br> 
+                    <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>
+                </p>
+            </div>
+            
+            <!-- Category Badge -->
+            <div id="type-badge" class="hidden absolute top-4 right-6 bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-gray-400 border border-gray-100">
+                Hot Take
+            </div>
+        </div>
+
+        <!-- Action Section -->
+        <div class="space-y-3">
+            <button id="gen-btn" class="btn-primary w-full py-5 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-sm">
+                Dapatkan Topik Baru
+            </button>
+            
+            <button id="timer-btn" class="hidden w-full py-4 rounded-2xl bg-amber-50 border border-amber-100 text-amber-700 font-bold text-xs uppercase tracking-widest hover:bg-amber-100 transition-all">
+                Mulai Tantangan (2 Menit)
+            </button>
+
+            <div class="flex gap-2">
+                <button id="copy-btn" class="btn-outline flex-1 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider">
+                    Salin Topik
+                </button>
+                <button id="reset-btn" class="btn-outline flex-1 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider text-red-500 border-red-500/20 hover:bg-red-50">
+                    Reset App
+                </button>
+            </div>
+        </div>
+
+        <footer class="mt-16 opacity-50">
+            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">ScentTalks v2.6 • Roulette Edition</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-xs font-bold shadow-xl opacity-0 pointer-events-none z-50">
+        Berhasil disalin ke clipboard!
+    </div>
+
+    <script>
+        const database = [
+            { type: "HOT TAKE", content: "Parfum lokal harganya makin nggak ngotak, mending beli desainer sekalian." },
+            { type: "TOPIK DISKUSI", content: "Kenapa orang Indonesia obsesi banget sama parfum 'Beast Mode'?" },
+            { type: "HOT TAKE", content: "Notes Vanilla itu ngebosenin dan nggak ada seninya sama sekali." },
+            { type: "TOPIK DISKUSI", content: "Seberapa penting botol parfum buat kalian? Rela bayar mahal demi botol?" },
+            { type: "HOT TAKE", content: "Banyak brand lokal cuma ganti stiker tapi ngaku 'Original Creation'." },
+            { type: "HOT TAKE", content: "Gatekeeping parfum itu sah-sah aja biar wangi lu nggak pasaran." },
+            { type: "TOPIK DISKUSI", content: "Mending beli 1 parfum 5 juta atau 10 parfum 500 rebu?" },
+            { type: "HOT TAKE", content: "Parfum cloning/dupe itu sebenernya ngerusak industri kreatif." },
+            { type: "HOT TAKE", content: "Influencer yang bilang 'semua parfum blind buy worthy' itu penipu." },
+            { type: "TOPIK DISKUSI", content: "Kalo parfum favorit lu discontinue, lu bakal cari stock lama atau move on?" },
+            { type: "HOT TAKE", content: "Wanginya Sauvage itu udah jadi bau 'Mas-Mas Kantor' standar." },
+            { type: "TOPIK DISKUSI", content: "Apa parfum paling 'overrated' yang pernah lu beli karena hype?" },
+            { type: "HOT TAKE", content: "Pake parfum mahal tapi nggak mandi itu percuma, tetep bau apek." },
+            { type: "HOT TAKE", content: "Longevity (tahan lama) itu faktor paling nggak penting dalam kualitas parfum." },
+            { type: "TOPIK DISKUSI", content: "Ada nggak notes parfum yang bikin lu auto mual kalo nyium?" }
+        ];
+
+        let timerInterval;
+        let timeLeft = 60;
+        let phase = 'idle'; 
+
+        const topicBox = document.getElementById('topic-box');
+        const topicText = document.getElementById('topic-text');
+        const badge = document.getElementById('type-badge');
+        const genBtn = document.getElementById('gen-btn');
+        const timerBtn = document.getElementById('timer-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const phaseContainer = document.getElementById('phase-container');
+        const phaseLabel = document.getElementById('phase-label');
+        const timerNumber = document.getElementById('timer-number');
+        const progressBar = document.getElementById('progress');
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            phase = 'idle';
+            timeLeft = 60;
+            phaseContainer.classList.add('hidden');
+            timerBtn.classList.remove('hidden');
+            timerBtn.innerText = "MULAI TANTANGAN (2 MENIT)";
+            progressBar.style.width = '100%';
+        }
+
+        function updateBadge(type) {
+            badge.innerText = type;
+            badge.classList.remove('hidden');
+            if(type === "HOT TAKE") {
+                badge.style.color = "#dc2626";
+                badge.style.borderColor = "#fee2e2";
+                badge.style.backgroundColor = "#fef2f2";
+            } else {
+                badge.style.color = "#0284c7";
+                badge.style.borderColor = "#e0f2fe";
+                badge.style.backgroundColor = "#f0f9ff";
+            }
+        }
+
+        function startPhase(currentPhase) {
+            phase = currentPhase;
+            timeLeft = 60;
+            phaseContainer.classList.remove('hidden');
+            
+            if (phase === 'thinking') {
+                phaseLabel.innerText = "Fase 1: Berpikir & Persiapan";
+                phaseLabel.style.color = "#d97706";
+                progressBar.style.backgroundColor = "#fbbf24";
+            } else {
+                phaseLabel.innerText = "Fase 2: Waktunya Berdiskusi!";
+                phaseLabel.style.color = "#0284c7";
+                progressBar.style.backgroundColor = "#0ea5e9";
+            }
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerNumber.innerText = timeLeft + 's';
+                progressBar.style.width = (timeLeft / 60 * 100) + '%';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (phase === 'thinking') {
+                        startPhase('talking');
+                    } else {
+                        phaseLabel.innerText = "SELESAI!";
+                        timerBtn.innerText = "COBA LAGI?";
+                        showToast("Waktu habis! Sesi diskusi berakhir.");
+                    }
+                }
+            }, 1000);
+        }
+
+        genBtn.addEventListener('click', () => {
+            if (genBtn.disabled) return;
+            
+            resetTimer();
+            genBtn.disabled = true;
+            topicBox.classList.add('spinning');
+            badge.classList.add('hidden');
+            
+            let rounds = 0;
+            const maxRounds = 12; // Jumlah pergantian teks dalam roulette
+            
+            const roulette = setInterval(() => {
+                const tempIndex = Math.floor(Math.random() * database.length);
+                topicText.innerHTML = `<span class="text-gray-400 font-normal">"${database[tempIndex].content}"</span>`;
+                rounds++;
+                
+                if (rounds >= maxRounds) {
+                    clearInterval(roulette);
+                    
+                    // Final Selection
+                    const finalItem = database[Math.floor(Math.random() * database.length)];
+                    topicText.innerHTML = `<span class="text-gray-900 italic">"${finalItem.content}"</span>`;
+                    updateBadge(finalItem.type);
+                    
+                    topicBox.classList.remove('spinning');
+                    genBtn.disabled = false;
+                    timerBtn.classList.remove('hidden');
+                }
+            }, 80); // Kecepatan putaran roulette (ms)
+        });
+
+        timerBtn.addEventListener('click', () => {
+            if (phase === 'idle') {
+                startPhase('thinking');
+                timerBtn.innerText = "TANTANGAN BERJALAN...";
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            resetTimer();
+            topicText.innerHTML = `Siapkan argumen Anda. <br> <span class="text-gray-400 text-base font-normal mt-2 block italic">Silakan tekan tombol di bawah untuk mendapatkan topik diskusi hari ini.</span>`;
+            badge.classList.add('hidden');
+            timerBtn.classList.add('hidden');
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            const text = topicText.innerText;
+            if (text.includes("Siapkan argumen")) return;
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Berhasil disalin!");
+        });
+    </script>
+</body>
+</html>
